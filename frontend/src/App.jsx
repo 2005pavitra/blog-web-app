@@ -1,13 +1,18 @@
-import React from 'react'
-import { useState } from 'react'
+import React, {useState} from 'react'
+
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Registration from './pages/registration'
 
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <h1 className='bg-blue-700 text-white'>blog-web app</h1>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Registration />} />
+        </Routes>
+      </Router>
     </>
   )
 }
