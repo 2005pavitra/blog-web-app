@@ -2,7 +2,7 @@ import { Blog } from "../models/blogs.models.js";
 import mongoose from "mongoose";
 import { v2 as cloudinary } from 'cloudinary';
 
-
+//create blog
 const createBlog = async (req, res) => {
     try {
 
@@ -61,4 +61,101 @@ const createBlog = async (req, res) => {
     }
 }
 
-export { createBlog }
+//update blog
+const updateBlog = async(req,res) => {
+    try {
+        const {id} = req.params;
+        const {title, category, description, blogImage} = req.body;
+
+        const blog = await Blog.findById(id);
+        if(!blog){
+            console.log("Blog not found")
+        }
+
+        blog.title = title || blog.title
+        blog.category = category || blog.category
+        blog.description = description || blog.description
+        blog.blogImage = blogImage || blog.blogImage
+
+        await blog.save();
+        return res.status(200).json({message:"Blog updated successfully", blog})
+
+    } catch (error) {
+        console.log("error creating allblogs: ", error);
+        return res.status(500).json({error: "Internal server error"})
+    }
+}
+
+//deleteBlog
+const deleteBlog = async(req,res) =>{
+    try {
+        const {id} = req.params;
+        console.log(id);
+
+        const blog = await Blog.findById(id);
+        // console.log(blog.title)
+        if(!blog){
+            return res.status(404).json({error:"Blog not found"})
+        }
+
+        await blog.deleteOne();
+        return res.status(200).json({message:"Blog deleted successfully"})
+
+    } catch (error) {
+     console.log("error deleting blog")   
+     return res.status(500).json({message:"Internal server error"})
+    }
+}
+
+
+//all blogs
+const getAllblogs = async(req, res) =>{
+    try {
+        const allblogs = await Blog.find();
+        if(!allblogs || allblogs.length === 0){
+            return res.status(500).json({message:"all blogs not found"});
+        }
+
+        return res.status(200).json({message:"allblogs retreived successfully", allblogs})
+
+    } catch (error) {
+        console.log("error in fetching all blogs")
+        return res.status(404).json({message:"Internal server error"})
+    }
+}
+
+
+//single blog
+const getSingleBlog = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const blog = await Blog.findById(id);
+
+        if (!blog) {
+            return res.status(404).json({ error: "Blog not found" });
+        }
+
+        return res.status(200).json({ message: "Blog retrieved successfully", blog });
+    } catch (error) {
+        console.error("Error fetching blog:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+//my blogs
+const getMyBlogs = async(req,res) =>{
+    try {
+        const blogs = await Blog.find({createdBy:req.user._id});
+
+        if (!blogs) {
+            return res.status(404).json({ error: "Blog not found" });
+        }
+
+        return res.status(200).json({message:`My Blogs`, blogs})
+    } catch (error) {
+        console.error("Error fetching blog:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export { createBlog , updateBlog, deleteBlog, getAllblogs, getSingleBlog, getMyBlogs}
