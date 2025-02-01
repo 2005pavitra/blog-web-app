@@ -1,12 +1,11 @@
 import express from "express";
-import {createdBlog, getBlogs, getBlogById, updateBlog, deleteBlog} from "../controllers/blogs.controller.js";
+import { createBlog } from "../controller/blogs.controller.js";
+import { isAuthenticated } from "../middleware/authUser.js";
+import { isAdmin } from "../middleware/authUser.js";
 
 const router = express.Router();
 
-router.get("/", getBlogs);
-router.get("/:id", getBlogById);
-router.post("/", createdBlog);
-router.put("/:id", updateBlog);
-router.delete("/:id", deleteBlog);
+router.post("/create",isAuthenticated,isAdmin, createBlog);
+
 
 export default router;

@@ -1,28 +1,64 @@
-export const register = async (req, res) => {
+import { Blog } from "../models/blogs.models.js";
+import mongoose from "mongoose";
+import { v2 as cloudinary } from 'cloudinary';
+
+
+const createBlog = async (req, res) => {
     try {
-        const { name, email, password, phone, role } = req.body;
-    // console.log(name, email, password, phone, role);    
-    if(!name || !email || !password || !phone || !role){
-        return res.status(400).json({error: "All fields are required"})
-    }
 
-    const user =await User.findOne({email})
-    if(user){
-        return res.status(400).json({error: "User already exists"})
-    }
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).json({ error: "No files were uploaded" })
+        }
+        const { blogImage } = req.files;
+        const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
+        if (!allowedFileTypes.includes(blogImage.mimetype)) {
+            return res.status(400).json({ error: "Invalid File type" })
+        }
 
-    const hashedPassword = await bcrypt.hash(password, 10)
-    const newUser = await new User({
-        email, name, password:hashedPassword, phone, role
-    })
-    await newUser.save()
-    if(newUser){
-        createTokenandSaveCookies(newUser._id, res)
-    }
-    res.status(201).json({message: "User registered successfully", newUser, token: newUser.token})
-        
+
+
+        const { title, category, description } = req.body
+        if (!title || !category || !description) {
+            return res.status(400).json({ error: "All fields are required" })
+        }
+
+          // const {adminName, createdBy} = req.body;
+          const adminName = req?.user?.name;
+          const createdBy = req?.user?._id;
+          
+
+        // if (!mongoose.Types.ObjectId.isValid(createdBy)) {
+        //     return res.status(400).json({ error: "Invalid user id" })
+        // }
+
+      
+
+        const CloudinaryResponse = await cloudinary.uploader.upload(blogImage.tempFilePath)
+        if (!CloudinaryResponse) {
+            return res.status(500).json({ error: "Error while uploading photo" })
+        }
+
+        const newBlog = new Blog(
+            {
+                title,
+                category,
+                description,
+                adminName,
+                createdBy,
+                blogImage: {
+                    public_id: CloudinaryResponse.public_id,
+                    url: CloudinaryResponse.url
+                },
+            }
+        )
+
+        await newBlog.save()
+
+        res.status(201).json({ message: "Blog created successfully", newBlog })
     } catch (error) {
         console.log(error)
-        return res.status(500).json({error: "Internal server error"})
+        return res.status(500).json({ error: "Internal server error in creating blog" })
     }
 }
+
+export { createBlog }

@@ -3,10 +3,12 @@ const app = express();
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRouter from "./routes/user.route.js";
+import blogRouter from "./routes/blogs.route.js";
 import bodyParser from "body-parser";
 import cors from "cors"
 import fileUpload from "express-fileupload";
 import { v2 as cloudinary } from 'cloudinary';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 //middlware
@@ -22,6 +24,8 @@ app.use(fileUpload({
     useTempFiles : true,
     tempFileDir : '/tmp/'
 }));
+app.use(cookieParser())
+
 
 //cloudinary
 
@@ -33,6 +37,7 @@ cloudinary.config({
 
 //routes
 app.use("/api/users", userRouter);
+app.use("/api/blogs", blogRouter);
 
 
 const PORT = process.env.PORT || 4000;
