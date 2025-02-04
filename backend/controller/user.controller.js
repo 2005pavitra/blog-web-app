@@ -33,7 +33,7 @@ export const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10)
         const CloudinaryResponse = await cloudinary.uploader.upload(photo.tempFilePath)
         if(!CloudinaryResponse){
-            return res.status(500).json({ error: "Error while uploading photo" });
+            res.status(500).json({ error: "Error while uploading photo" });
             console.log("Error while uploading photo");
         }
         const newUser = new User({
