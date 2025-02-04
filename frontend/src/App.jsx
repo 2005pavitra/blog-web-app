@@ -9,6 +9,7 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 import AdminBlog from './pages/Dashboard/AdminBlog'
 import CreateBlog from './pages/Dashboard/CreateBlog'
+import {useAuth} from "./context/AuthProvider"
 
 
 
@@ -16,6 +17,17 @@ function App() {
 
   const location = useLocation()
   const hideNavbarAndFooter = ["/login", "/registration"].includes(location.pathname); 
+
+  const { blogs, loading, error } = useAuth();
+  console.log(blogs)
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div>
