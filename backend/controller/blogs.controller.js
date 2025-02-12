@@ -1,6 +1,6 @@
 import { Blog } from "../models/blogs.models.js";
-import mongoose from "mongoose";
 import { v2 as cloudinary } from 'cloudinary';
+import jwt from "jsonwebtoken";
 
 //create blog
 const createBlog = async (req, res) => {
@@ -109,20 +109,49 @@ const deleteBlog = async(req,res) =>{
 
 
 //all blogs
-const getAllblogs = async(req, res) =>{
+
+const getAllblogs = async (req, res) => {
     try {
-        const allblogs = await Blog.find();
-        if(!allblogs || allblogs.length === 0){
-            return res.status(500).json({message:"all blogs not found"});
+        console.log("Received headers:", req.headers);
+        console.log("Received cookies:", req.cookies);
+
+        
+        if (!req.cookies || !req.cookies.token) {
+            return res.status(401).json({ error: "No token provided" });
         }
 
-        return res.status(200).json({message:"allblogs retreived successfully", allblogs})
+        const token = req.cookies.token; // Directly extract token
+        console.log("Extracted token:", token);
+
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        console.log("Decoded token:", decoded);
+
+        const allBlogs = await Blog.find();
+        if (!allBlogs || allBlogs.length === 0) {
+            return res.status(404).json({ message: "No blogs found" });
+        }
+
+        return res.status(200).json({
+            message: "All blogs retrieved successfully",
+            allBlogs
+        });
 
     } catch (error) {
-        console.log("error in fetching all blogs")
-        return res.status(404).json({message:"Internal server error"})
+        console.error("Error fetching all blogs:", error.message);
+
+        if (error.name === "JsonWebTokenError") {
+            return res.status(401).json({ error: "Invalid token" });
+        }
+        if (error.name === "TokenExpiredError") {
+            return res.status(401).json({ error: "Token expired, please login again" });
+        }
+
+        return res.status(500).json({ message: "Internal server error" });
     }
-}
+};
+
+export default getAllblogs;
+
 
 
 //single blog

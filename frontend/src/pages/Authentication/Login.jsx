@@ -1,7 +1,8 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -13,23 +14,29 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:4000/api/users/login", { email, password,role });
+      const response = await axios.post(
+        "http://localhost:4000/api/users/login",
+        { email, password, role },
+        { withCredentials: true }
+      );
   
-      console.log("Login Response:", response.data); // Debugging
+      console.log("Login Response:", response.data);
   
       if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-        console.log("Token Stored:", localStorage.getItem("token")); // Debugging
-        navigate("/");
+        login(response.data.user, response.data.token); 
+        console.log("Token Stored in Cookie");
+  
+        navigate("/createblog");
       } else {
         console.error("No token received from backend!");
       }
     } catch (err) {
-      console.error("Login failed:", err.response ? err.response.data : err.message);
-      alert("Invalid credentials!");
+      console.error("Login failed:", err?.response?.data?.message || err.message);
+      alert(err?.response?.data?.message || "Invalid credentials!");
     }
   };
   
+
   return (
     <div className="p-6 max-w-sm mx-auto">
       <h2 className="text-xl font-bold mb-4">Login</h2>
@@ -37,7 +44,7 @@ const Login = () => {
         <input
           type="email"
           placeholder="Email"
-          className="border p-2 w-full mb-2"
+          className="border text-black p-2 w-full mb-2"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -45,20 +52,22 @@ const Login = () => {
         <input
           type="password"
           placeholder="Password"
-          className="border p-2 w-full mb-4"
+          className="border text-black p-2 w-full mb-4"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <input
-          type="text"
-          placeholder="Select role"
-          className="border p-2 w-full mb-4"
+        <select
+          className="border text-black p-2 w-full mb-4"
           value={role}
           onChange={(e) => setRole(e.target.value)}
           required
-        />
-        <button className="bg-blue-500 text-white px-4 py-2 rounded w-full">Login</button>
+        >
+          <option value="">Select Role</option>
+          <option value="admin">Admin</option>
+          <option value="user">User</option>
+        </select>
+        <button  className="bg-blue-500 text-white px-4 py-2 rounded w-full">Login</button>
       </form>
     </div>
   );

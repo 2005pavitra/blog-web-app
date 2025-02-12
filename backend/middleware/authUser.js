@@ -1,41 +1,46 @@
-import { User } from "../models/user.models.js"
-import jwt from "jsonwebtoken"
-
-//Authentication
-
+import { User } from "../models/user.models.js";
+import jwt from "jsonwebtoken";
 
 export const isAuthenticated = async (req, res, next) => {
     try {
-        const token = await req.cookies.token;
+        console.log("Incoming Cookies: ", req.cookies.token);
 
-        // console.log("Middleware: ",token)
+        const token = req.cookies?.token;
+
+        console.log("Extracted Token from Cookies: ", token);
 
         if (!token) {
-            return res.status(401).json({ error: "Not token provided" })
+            return res.status(401).json({ error: "User not authenticated" });
         }
-        const decoded = jwt.verify(token, process.env.SECRET_KEY)
+
+        const decoded = jwt.verify(token, process.env.SECRET_KEY); 
+        console.log("Decoded JWT:", decoded);
+
         const user = await User.findById(decoded.userId);
-
         if (!user) {
-            return res.status(401).json({ error: "User not Found" })
+            return res.status(401).json({ error: "User not found" });
         }
+
         req.user = user;
-        console.log(req.user.role)
-        next()
+        next();
     } catch (error) {
-        console.log("Error in Authentication: ", error);
-        return res.status(401).json({ error: "User not authenticated" })
+        console.error("Authentication Error:", error.message);
+        if (error.name === "JsonWebTokenError") {
+            return res.status(401).json({ error: "Invalid token" });
+        }
+        if (error.name === "TokenExpiredError") {
+            return res.status(401).json({ error: "Token expired, please login again" });
+        }
+        return res.status(500).json({ error: "Internal server error" });
     }
-
-}
-
+};
 
 
-//Check Admin Role
+
+// Admin Role Middleware
 export const isAdmin = (req, res, next) => {
-
     if (req.user?.role !== "admin") {
-        return res.status(401).json({ error: "Access denied. Admins only." })
+        return res.status(403).json({ error: "Access denied. Admins only." });
     }
     next();
-}
+};

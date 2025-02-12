@@ -1,5 +1,4 @@
 import express from "express";
-const app = express();
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRouter from "./routes/user.route.js";
@@ -9,17 +8,20 @@ import cors from "cors"
 import fileUpload from "express-fileupload";
 import { v2 as cloudinary } from 'cloudinary';
 import cookieParser from 'cookie-parser';
+const app = express();
 
 dotenv.config();
 //middlware
 app.use(express.json());
 app.use(bodyParser.json({limit: "50mb", extended: true}));
 app.use(bodyParser.urlencoded({limit:"50mb", extended: true}));
-app.use(cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
-}));
+app.use(
+    cors({
+      origin: "http://localhost:5173", 
+      credentials: true,
+    })
+  );
+  
 app.use(fileUpload({
     useTempFiles : true,
     tempFileDir : '/tmp/'

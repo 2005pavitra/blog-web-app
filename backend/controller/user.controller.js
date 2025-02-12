@@ -6,54 +6,67 @@ import { v2 as cloudinary } from 'cloudinary';
 
 export const register = async (req, res) => {
     try {
-       
-       //photo upload
-        if (!req.files || Object.keys(req.files).length === 0) {
-            return res.status(400).json({ error: "No files were uploaded" })
-        }
-        const { photo } = req.files;
-        const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
-        if (!allowedFileTypes.includes(photo.mimetype)) {
-            return res.status(400).json({ error: "Invalid File type" })
-        }
         const { name, email, password, phone, role } = req.body;
-        
-        
-        
-        if (!name || !email || !password || !phone || !role || !photo) {
-            return res.status(400).json({ error: "All fields are required" })
-        }
-        // console.log(name, email, password, phone, role);    
 
-        const user = await User.findOne({ email })
+        // Ensure all required fields are present
+        if (!name || !email || !password || !phone || !role) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+
+        // Check if the user already exists
+        const user = await User.findOne({ email });
         if (user) {
-            return res.status(400).json({ error: "User already exists" })
+            return res.status(400).json({ error: "User already exists" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const CloudinaryResponse = await cloudinary.uploader.upload(photo.tempFilePath)
-        if(!CloudinaryResponse){
-            res.status(500).json({ error: "Error while uploading photo" });
-            console.log("Error while uploading photo");
-        }
-        const newUser = new User({
-            email, name, password: hashedPassword, phone, role, photo : {
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Handle photo upload only if a file is provided
+        let uploadedPhoto = null;
+        if (req.files && req.files.photo) {
+            const { photo } = req.files;
+            const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
+
+            if (!allowedFileTypes.includes(photo.mimetype)) {
+                return res.status(400).json({ error: "Invalid file type" });
+            }
+
+            const CloudinaryResponse = await cloudinary.uploader.upload(photo.tempFilePath);
+            if (!CloudinaryResponse) {
+                return res.status(500).json({ error: "Error while uploading photo" });
+            }
+
+            uploadedPhoto = {
                 public_id: CloudinaryResponse.public_id,
                 url: CloudinaryResponse.url
-            }
-        })
-        await newUser.save()
+            };
+        }
+
+        // Create new user
+        const newUser = new User({
+            email,
+            name,
+            password: hashedPassword,
+            phone,
+            role,
+            photo: uploadedPhoto // This will be `null` if no photo was uploaded
+        });
+
+        await newUser.save();
+
         if (newUser) {
             const token = await createTokenandSaveCookies(newUser._id, res);
-            console.log("Signup token: ",token)
+            console.log("Signup token:", token);
         }
-        res.status(201).json({ message: "User registered successfully", newUser, token: newUser.token })
-        // console.log("User registered successfully")
+
+        res.status(201).json({ message: "User registered successfully", newUser, token: newUser.token });
+
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ error: "Internal server error" })
+        console.error("Error in registration:", error);
+        return res.status(500).json({ error: "Internal server error" });
     }
-}
+};
+
 
 export const login = async (req, res) => {
     try {

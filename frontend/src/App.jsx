@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
-import Home from "./components/Home"
+import Hero from './components/Hero';
+import Home from './pages/Blog/Home';
 import Registration from './pages/Authentication/Registration'
 import Login from "./pages/Authentication/Login"
 import About from './pages/About'
@@ -10,6 +11,7 @@ import Contact from './pages/Contact'
 import AdminBlog from './pages/Dashboard/AdminBlog'
 import CreateBlog from './pages/Dashboard/CreateBlog'
 import {useAuth} from "./context/AuthProvider"
+import BlogDetails from "./pages/Blog/BlogDetails";
 
 
 
@@ -18,16 +20,16 @@ function App() {
   const location = useLocation()
   const hideNavbarAndFooter = ["/login", "/registration"].includes(location.pathname); 
 
-  const { blogs, loading, error } = useAuth();
+  const { blogs} = useAuth();
   console.log(blogs)
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
   
-  if (error) {
-    return <div>{error}</div>;
-  }
+  // if (error) {
+  //   return <div>{error}</div>;
+  // }
 
   return (
     <div>
@@ -40,6 +42,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/adminblog" element={<AdminBlog />} />
         <Route path="/createblog" element={<CreateBlog />} />
+        <Route path="/blog/:id" element={<BlogDetails />} />
 
       </Routes>
       {!hideNavbarAndFooter && <Footer />}
