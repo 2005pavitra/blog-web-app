@@ -20,15 +20,15 @@ function App() {
   const location = useLocation()
   const hideNavbarAndFooter = ["/login", "/registration"].includes(location.pathname); 
 
-  const { blogs} = useAuth();
-  console.log(blogs)
+  const { loading} = useAuth();
+  // console.log(blogs)
 
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   
   // if (error) {
-  //   return <div>{error}</div>;
+    // return <div>{error}</div>;
   // }
 
   return (
@@ -38,11 +38,10 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/registration" element={<Registration />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/adminblog" element={<AdminBlog />} />
         <Route path="/createblog" element={<CreateBlog />} />
         <Route path="/blog/:id" element={<BlogDetails />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
 
       </Routes>
       {!hideNavbarAndFooter && <Footer />}
