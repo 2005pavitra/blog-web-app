@@ -6,7 +6,11 @@ export const AuthProvider = ({ children }) => {
   const [blogs, setBlogs] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    // Try to get user from localStorage on initial load
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -15,10 +19,10 @@ export const AuthProvider = ({ children }) => {
   
         const response = await fetch("http://localhost:4000/api/blogs/allblogs", {
           method: "GET",
-          // headers: {
-          //   "Authorization": `Bearer ${token}`, 
-          //   "Content-Type": "application/json",
-          // },
+          headers: {
+            "Authorization": `Bearer ${token}`, 
+            "Content-Type": "application/json",
+          },
           credentials: "include",
         });
   
@@ -51,18 +55,21 @@ export const AuthProvider = ({ children }) => {
     }
 
     localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
     console.log("Token stored:", localStorage.getItem("token")); // Debugging
+    console.log("User stored:", userData); // Debugging
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     console.log("User logged out, token removed");
   };
 
   return (
-    <AuthContext.Provider value={{ blogs, loading, error, login, logout }}>
+    <AuthContext.Provider value={{ blogs, loading, error, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,5 +1,5 @@
 import express from "express";
-import { createBlog, deleteBlog, getAllblogs, updateBlog, getMyBlogs, getSingleBlog } from "../controller/blogs.controller.js";
+import { createBlog, deleteBlog, getAllblogs, updateBlog, getMyBlogs, getSingleBlog, toggleLike } from "../controller/blogs.controller.js";
 import { isAuthenticated } from "../middleware/authUser.js";
 import { isAdmin } from "../middleware/authUser.js";
 import verifyToken from "../middleware/verifyToken.js";
@@ -12,6 +12,7 @@ router.put("/update/:id",isAuthenticated,isAdmin, updateBlog);
 router.get("/allblogs",isAuthenticated,getAllblogs);
 router.get("/:id", isAuthenticated, getSingleBlog);
 router.get("/admin/:id", isAuthenticated,isAdmin, getMyBlogs);
+router.post("/like/:id", isAuthenticated, toggleLike);
 
 
 export default router;

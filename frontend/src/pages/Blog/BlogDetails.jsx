@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Comments from "../../components/Comments";
 
 function BlogDetails() {
   const { id } = useParams();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
     const fetchBlogDetails = async () => {
@@ -30,6 +33,13 @@ function BlogDetails() {
         const data = await response.json();
         console.log("Fetched data:", data)
         setBlog(data.blog);
+        setLikeCount(data.blog.likeCount || 0);
+        // Check if current user has liked this blog
+        const storedToken = localStorage.getItem("token");
+        if (storedToken && data.blog.likes) {
+          const user = JSON.parse(localStorage.getItem("user"));
+          setIsLiked(data.blog.likes.includes(user?._id));
+        }
       } catch (err) {
         console.error("Fetch error:", err);
         setError(err.message);
@@ -41,6 +51,33 @@ function BlogDetails() {
     fetchBlogDetails();
   }, [id]);
 
+
+  const handleLike = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login to like this blog");
+        return;
+      }
+
+      const response = await fetch(`http://localhost:4000/api/blogs/like/${id}`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsLiked(data.isLiked);
+        setLikeCount(data.likeCount);
+      }
+    } catch (error) {
+      console.error("Error liking blog:", error);
+    }
+  };
 
   if (loading) return <p className="text-center text-white">Loading...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
@@ -62,6 +99,23 @@ function BlogDetails() {
       <p className="mt-4 text-white"><strong>Category:</strong> {blog.category}</p>
       <p className="text-white text-lg">{blog.description}</p>
 
+      {/* Like Button */}
+      <div className="mt-6 flex items-center space-x-4">
+        <button
+          onClick={handleLike}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-md transition ${
+            isLiked 
+              ? 'bg-red-500 text-white hover:bg-red-600' 
+              : 'bg-gray-600 text-white hover:bg-gray-700'
+          }`}
+        >
+          <span>{isLiked ? '❤️' : '🤍'}</span>
+          <span>{isLiked ? 'Liked' : 'Like'}</span>
+          <span className="bg-white bg-opacity-20 px-2 py-1 rounded text-sm">
+            {likeCount}
+          </span>
+        </button>
+      </div>
 
       <p className="mt-4 text-white"><strong>Author:</strong> {blog.adminName}</p>
 
@@ -71,6 +125,9 @@ function BlogDetails() {
       >
         Go Back
       </button>
+
+      {/* Comments Section */}
+      <Comments blogId={id} />
     </div>
   );
 }

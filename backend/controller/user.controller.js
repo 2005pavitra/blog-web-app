@@ -29,7 +29,7 @@ export const register = async (req, res) => {
 
             if (!allowedFileTypes.includes(photo.mimetype)) {
                 return res.status(400).json({ error: "Invalid file type" });
-            }
+            } 
 
             const CloudinaryResponse = await cloudinary.uploader.upload(photo.tempFilePath);
             if (!CloudinaryResponse) {

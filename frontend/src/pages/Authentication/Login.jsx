@@ -5,14 +5,23 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 const Login = () => {
+  
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
+  const [adminPasskey, setAdminPasskey] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
+    // Check if admin role is selected and passkey is provided
+    if (role === 'admin' && adminPasskey !== 'ADMIN123') {
+      alert('Invalid admin passkey! Please contact the system administrator.');
+      return;
+    }
+    
     try {
       const response = await axios.post(
         "http://localhost:4000/api/users/login",
@@ -26,7 +35,7 @@ const Login = () => {
         login(response.data.user, response.data.token); 
         console.log("Token Stored in Cookie");
   
-        navigate("/createblog");
+        navigate("/allblogs");
       } else {
         console.error("No token received from backend!");
       }
@@ -67,8 +76,24 @@ const Login = () => {
           <option value="admin">Admin</option>
           <option value="user">User</option>
         </select>
-        <button  className="bg-blue-500 text-white px-4 py-2 rounded w-full">Login</button>
+        {role === 'admin' && (
+          <input
+            type="password"
+            placeholder="Admin Passkey"
+            className="border text-black p-2 w-full mb-4"
+            value={adminPasskey}
+            onChange={(e) => setAdminPasskey(e.target.value)}
+            required
+          />
+        )}
+        <button  className="bg-blue-500 text-white px-4 py-2 rounded w-full mb-4">Login</button>
       </form>
+      <div className="text-center">
+        <p className="text-gray-600 mb-2">Don't have an account?</p>
+        <Link to="/registration" className="text-blue-500 hover:text-blue-700 underline">
+          Register here
+        </Link>
+      </div>
     </div>
   );
 };
