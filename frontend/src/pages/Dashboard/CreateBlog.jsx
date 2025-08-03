@@ -36,7 +36,7 @@ const CreateBlog = () => {
     const token = localStorage.getItem("token")
 
     try {
-      const res = await axios.post("http://localhost:4000/api/blogs/create", data, {
+      const res = await axios.post("https://blog-web-app-rwce.onrender.com/api/blogs/create", data, {
         // headers: {
         //   "Content-Type": "multipart/form-data",
         //   Authorization: `Bearer ${token}`,

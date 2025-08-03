@@ -32,7 +32,7 @@ function Registration() {
         }
         
         try {
-            const response = await axios.post("http://localhost:4000/api/users/register", formdata);
+            const response = await axios.post("https://blog-web-app-rwce.onrender.com/api/users/register", formdata);
             console.log(response.data);
             alert('User registered successfully!');
             navigate('/login');

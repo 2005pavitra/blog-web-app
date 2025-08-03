@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const token = localStorage.getItem("token"); 
   
-        const response = await fetch("http://localhost:4000/api/blogs/allblogs", {
+        const response = await fetch("https://blog-web-app-rwce.onrender.com/api/blogs/allblogs", {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`, 

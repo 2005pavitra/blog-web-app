@@ -21,7 +21,7 @@ const EditBlog = () => {
     const fetchBlog = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://localhost:4000/api/blogs/${id}`, {
+        const response = await axios.get(`https://blog-web-app-rwce.onrender.com/api/blogs/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

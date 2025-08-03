@@ -17,7 +17,7 @@ function BlogDetails() {
 
         const token = localStorage.getItem("token");
 
-        const response = await fetch(`http://localhost:4000/api/blogs/${id}`, {
+        const response = await fetch(`https://blog-web-app-rwce.onrender.com/api/blogs/${id}`, {
           method: "GET",
           // headers: {
           //   "Authorization": `Bearer ${token}`,

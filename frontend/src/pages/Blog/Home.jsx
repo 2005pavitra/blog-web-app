@@ -32,7 +32,7 @@ function Home() {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.delete(`http://localhost:4000/api/blogs/delete/${blogId}`, {
+      const response = await axios.delete(`https://blog-web-app-rwce.onrender.com/api/blogs/delete/${blogId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

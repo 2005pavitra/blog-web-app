@@ -13,7 +13,7 @@ const Comments = ({ blogId }) => {
   // Fetch comments
   const fetchComments = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/api/comments/${blogId}`);
+      const response = await axios.get(`https://blog-web-app-rwce.onrender.com/api/comments/${blogId}`);
       setComments(response.data.comments);
     } catch (error) {
       console.error('Error fetching comments:', error);
