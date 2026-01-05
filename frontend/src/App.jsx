@@ -11,7 +11,7 @@ import Contact from './pages/Contact'
 import AdminBlog from './pages/Dashboard/AdminBlog'
 import CreateBlog from './pages/Dashboard/CreateBlog'
 import EditBlog from './pages/Dashboard/EditBlog'
-import {useAuth} from "./context/AuthProvider"
+import { useAuth } from "./context/AuthProvider"
 import BlogDetails from "./pages/Blog/BlogDetails";
 import UserDashboard from './pages/Dashboard/UserDashboard';
 
@@ -20,17 +20,17 @@ import UserDashboard from './pages/Dashboard/UserDashboard';
 function App() {
 
   const location = useLocation()
-  const hideNavbarAndFooter = ["/login", "/registration"].includes(location.pathname); 
+  const hideNavbarAndFooter = ["/login", "/registration"].includes(location.pathname);
 
-  const { loading} = useAuth();
+  const { loading } = useAuth();
   // console.log(blogs)
 
   if (loading) {
     return <div>Loading...</div>;
   }
-  
+
   // if (error) {
-    // return <div>{error}</div>;
+  // return <div>{error}</div>;
   // }
 
   return (
@@ -39,7 +39,7 @@ function App() {
       <Routes>
         <Route path="/userdashboard" element={<UserDashboard />} />
         <Route path="/registration" element={<Registration />} />
-        <Route path="/" element={<Navigate to="/registration" />}  replace/>
+        <Route path="/" element={<Home />} />
         <Route path="/allblogs" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/createblog" element={<CreateBlog />} />

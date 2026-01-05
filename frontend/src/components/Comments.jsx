@@ -13,7 +13,7 @@ const Comments = ({ blogId }) => {
   // Fetch comments
   const fetchComments = async () => {
     try {
-      const response = await axios.get(`https://blog-web-app-rwce.onrender.com/api/comments/${blogId}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/comments/${blogId}`);
       setComments(response.data.comments);
     } catch (error) {
       console.error('Error fetching comments:', error);
@@ -32,7 +32,7 @@ const Comments = ({ blogId }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:4000/api/comments/add', {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/comments/add`, {
         blogId,
         content: newComment
       }, {
@@ -58,7 +58,7 @@ const Comments = ({ blogId }) => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:4000/api/comments/update/${commentId}`, {
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/comments/update/${commentId}`, {
         content: editContent
       }, {
         headers: {
@@ -82,7 +82,7 @@ const Comments = ({ blogId }) => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:4000/api/comments/delete/${commentId}`, {
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/comments/delete/${commentId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -110,7 +110,7 @@ const Comments = ({ blogId }) => {
   return (
     <div className="mt-8">
       <h3 className="text-2xl font-semibold text-gray-800 mb-4">Comments ({comments.length})</h3>
-      
+
       {/* Add Comment Form */}
       {user ? (
         <form onSubmit={handleAddComment} className="mb-6">
@@ -147,7 +147,7 @@ const Comments = ({ blogId }) => {
                   {formatDate(comment.createdAt)}
                 </span>
               </div>
-              
+
               {/* Edit/Delete buttons */}
               {user && (user._id === comment.userId || user.role === 'admin') && (
                 <div className="flex space-x-2">
@@ -169,7 +169,7 @@ const Comments = ({ blogId }) => {
                 </div>
               )}
             </div>
-            
+
             {editingComment === comment._id ? (
               <div>
                 <textarea

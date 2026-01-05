@@ -15,25 +15,25 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const token = localStorage.getItem("token"); 
-  
-        const response = await fetch("https://blog-web-app-rwce.onrender.com/api/blogs/allblogs", {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/blogs/allblogs`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`, 
+            "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           credentials: "include",
         });
-  
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-  
+
         const data = await response.json();
         console.log("Blogs fetched:", data);
-  
-        setBlogs(data.allBlogs); 
+
+        setBlogs(data.allBlogs);
       } catch (err) {
         console.error("Error fetching blogs:", err.message);
         setError("Failed to load blogs.");
@@ -41,10 +41,10 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
-  
-    fetchBlogs(); 
+
+    fetchBlogs();
   }, []);
-  
+
 
   const login = (userData, token) => {
     console.log("Login function called: ", userData, token);

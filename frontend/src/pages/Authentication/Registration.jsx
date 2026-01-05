@@ -24,15 +24,15 @@ function Registration() {
     const handleSubmit = async (e) => {
         const navigate = useNavigate();
         e.preventDefault();
-        
+
         // Check if admin role is selected and passkey is provided
         if (formdata.role === 'admin' && formdata.adminPasskey !== 'ADMIN123') {
             alert('Invalid admin passkey! Please contact the system administrator.');
             return;
         }
-        
+
         try {
-            const response = await axios.post("https://blog-web-app-rwce.onrender.com/api/users/register", formdata);
+            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/users/register`, formdata);
             console.log(response.data);
             alert('User registered successfully!');
             navigate('/login');

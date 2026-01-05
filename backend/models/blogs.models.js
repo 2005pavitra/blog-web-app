@@ -58,9 +58,19 @@ const blogSchema = new mongoose.Schema({
     likeCount: {
         type: Number,
         default: 0
+    },
+    views: {
+        type: Number,
+        default: 0
+    },
+    tags: [{
+        type: String,
+        trim: true
+    }],
+    readingTime: {
+        type: Number, // in minutes
+        default: 1
     }
-
-
 })
 
 export const Blog = mongoose.model("Blog", blogSchema)

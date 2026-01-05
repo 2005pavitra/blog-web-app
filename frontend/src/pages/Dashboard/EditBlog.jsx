@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const EditBlog = () => {
   const { id } = useParams();
@@ -21,7 +23,7 @@ const EditBlog = () => {
     const fetchBlog = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`https://blog-web-app-rwce.onrender.com/api/blogs/${id}`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/blogs/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -73,7 +75,7 @@ const EditBlog = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.put(`http://localhost:4000/api/blogs/update/${id}`, data, {
+      const res = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/blogs/update/${id}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -104,13 +106,13 @@ const EditBlog = () => {
           {message}
         </p>
       )}
-      
+
       {currentImage && (
         <div className="mb-4">
           <p className="text-sm text-gray-600 mb-2">Current Image:</p>
-          <img 
-            src={currentImage} 
-            alt="Current blog" 
+          <img
+            src={currentImage}
+            alt="Current blog"
             className="w-full h-32 object-cover rounded border"
           />
         </div>
@@ -135,15 +137,23 @@ const EditBlog = () => {
           className="text-black w-full p-2 mb-3 border rounded"
           required
         />
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={formData.description}
-          onChange={handleChange}
-          className="text-black w-full p-2 mb-3 border rounded"
-          rows="4"
-          required
-        />
+        <div className="h-64 mb-12">
+          <ReactQuill
+            theme="snow"
+            value={formData.description}
+            onChange={(content) => setFormData({ ...formData, description: content })}
+            className="h-full"
+            modules={{
+              toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+                ['link', 'image'],
+                ['clean']
+              ],
+            }}
+          />
+        </div>
         <div className="mb-3">
           <label className="block text-sm text-gray-600 mb-2">
             New Image (optional - leave empty to keep current image):

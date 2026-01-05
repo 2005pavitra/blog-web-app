@@ -6,12 +6,12 @@ import verifyToken from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
-router.post("/create",isAuthenticated,isAdmin, createBlog);
-router.delete("/delete/:id",isAuthenticated,isAdmin, deleteBlog);
-router.put("/update/:id",isAuthenticated,isAdmin, updateBlog);
-router.get("/allblogs",isAuthenticated,getAllblogs);
-router.get("/:id", isAuthenticated, getSingleBlog);
-router.get("/admin/:id", isAuthenticated,isAdmin, getMyBlogs);
+router.post("/create", isAuthenticated, isAdmin, createBlog);
+router.delete("/delete/:id", isAuthenticated, isAdmin, deleteBlog);
+router.put("/update/:id", isAuthenticated, isAdmin, updateBlog);
+router.get("/allblogs", getAllblogs);
+router.get("/:id", getSingleBlog);
+router.get("/admin/:id", isAuthenticated, isAdmin, getMyBlogs);
 router.post("/like/:id", isAuthenticated, toggleLike);
 
 

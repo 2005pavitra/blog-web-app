@@ -5,7 +5,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 const Login = () => {
-  
+
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -15,26 +15,26 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     // Check if admin role is selected and passkey is provided
     if (role === 'admin' && adminPasskey !== 'ADMIN123') {
       alert('Invalid admin passkey! Please contact the system administrator.');
       return;
     }
-    
+
     try {
       const response = await axios.post(
-        "https://blog-web-app-rwce.onrender.com/api/users/login",
+        `${import.meta.env.VITE_API_BASE_URL}/users/login`,
         { email, password, role },
         { withCredentials: true }
       );
-  
+
       console.log("Login Response:", response.data);
-  
+
       if (response.data.token) {
-        login(response.data.user, response.data.token); 
+        login(response.data.user, response.data.token);
         console.log("Token Stored in Cookie");
-  
+
         navigate("/allblogs");
       } else {
         console.error("No token received from backend!");
@@ -44,7 +44,7 @@ const Login = () => {
       alert(err?.response?.data?.message || "Invalid credentials!");
     }
   };
-  
+
 
   return (
     <div className="p-6 max-w-sm mx-auto">
@@ -86,7 +86,7 @@ const Login = () => {
             required
           />
         )}
-        <button  className="bg-blue-500 text-white px-4 py-2 rounded w-full mb-4">Login</button>
+        <button className="bg-blue-500 text-white px-4 py-2 rounded w-full mb-4">Login</button>
       </form>
       <div className="text-center">
         <p className="text-gray-600 mb-2">Don't have an account?</p>
