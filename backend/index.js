@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRouter from "./routes/user.route.js";
 import blogRouter from "./routes/blogs.route.js";
-import commentRouter from "./routes/comments.route.js";
 import bodyParser from "body-parser";
 import cors from "cors"
 import fileUpload from "express-fileupload";
@@ -41,7 +40,6 @@ cloudinary.config({
 //routes
 app.use("/api/users", userRouter);
 app.use("/api/blogs", blogRouter);
-app.use("/api/comments", commentRouter);
 
 
 const PORT = process.env.PORT || 4000;

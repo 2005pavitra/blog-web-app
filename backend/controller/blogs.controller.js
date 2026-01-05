@@ -65,51 +65,24 @@ const createBlog = async (req, res) => {
 const updateBlog = async(req,res) => {
     try {
         const {id} = req.params;
-        const {title, category, description} = req.body;
+        const {title, category, description, blogImage} = req.body;
 
         const blog = await Blog.findById(id);
         if(!blog){
-            return res.status(404).json({error: "Blog not found"});
+            console.log("Blog not found")
         }
 
-        // Handle image upload if a new image is provided
-        let updatedImage = blog.blogImage;
-        if (req.files && req.files.blogImage) {
-            const { blogImage } = req.files;
-            const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
-            
-            if (!allowedFileTypes.includes(blogImage.mimetype)) {
-                return res.status(400).json({ error: "Invalid file type" });
-            }
-
-            // Delete old image from cloudinary if it exists
-            if (blog.blogImage && blog.blogImage.public_id) {
-                await cloudinary.uploader.destroy(blog.blogImage.public_id);
-            }
-
-            const CloudinaryResponse = await cloudinary.uploader.upload(blogImage.tempFilePath);
-            if (!CloudinaryResponse) {
-                return res.status(500).json({ error: "Error while uploading photo" });
-            }
-
-            updatedImage = {
-                public_id: CloudinaryResponse.public_id,
-                url: CloudinaryResponse.url
-            };
-        }
-
-        // Update blog fields
-        blog.title = title || blog.title;
-        blog.category = category || blog.category;
-        blog.description = description || blog.description;
-        blog.blogImage = updatedImage;
+        blog.title = title || blog.title
+        blog.category = category || blog.category
+        blog.description = description || blog.description
+        blog.blogImage = blogImage || blog.blogImage
 
         await blog.save();
-        return res.status(200).json({message:"Blog updated successfully", blog});
+        return res.status(200).json({message:"Blog updated successfully", blog})
 
     } catch (error) {
-        console.log("error updating blog: ", error);
-        return res.status(500).json({error: "Internal server error"});
+        console.log("error creating allblogs: ", error);
+        return res.status(500).json({error: "Internal server error"})
     }
 }
 
@@ -214,40 +187,22 @@ const getMyBlogs = async(req,res) =>{
     }
 }
 
-// Like/Unlike a blog
-const toggleLike = async (req, res) => {
+const toggleLike = async(req,res) =>{
     try {
-        const { id } = req.params;
-        const userId = req.user._id;
-
+        const {id} = req.params;
         const blog = await Blog.findById(id);
-        if (!blog) {
-            return res.status(404).json({ error: "Blog not found" });
+        if(!blog){
+            return res.status(404).json({error:"Blog not found"})
         }
 
-        const isLiked = blog.likes.includes(userId);
+        const user = req.user._id;
+        const isLiked = blog.likes.includes(user);
 
-        if (isLiked) {
-            // Unlike
-            blog.likes = blog.likes.filter(likeId => likeId.toString() !== userId.toString());
-            blog.likeCount = Math.max(0, blog.likeCount - 1);
-        } else {
-            // Like
-            blog.likes.push(userId);
-            blog.likeCount = blog.likes.length;
-        }
-
-        await blog.save();
-
-        res.status(200).json({ 
-            message: isLiked ? "Blog unliked successfully" : "Blog liked successfully",
-            likeCount: blog.likeCount,
-            isLiked: !isLiked
-        });
+        if(isLiked){
+            blog.likes = blog.likes.filter(id => id.toString() !== user.toString());
+        }else{}
     } catch (error) {
-        console.error("Error toggling like:", error);
-        res.status(500).json({ error: "Internal server error" });
     }
-};
+}
 
 export { createBlog , updateBlog, deleteBlog, getAllblogs, getSingleBlog, getMyBlogs, toggleLike}
