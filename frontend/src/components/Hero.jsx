@@ -1,8 +1,8 @@
 import React from 'react'
-import { AuthProvider } from '../context/AuthProvider'
+import { useAuth } from '../context/AuthProvider'
 
 function Hero() {
-  const {blogs} = AuthProvider
+  const {blogs} = useAuth()
   console.log(blogs)
   return (
     <div>Hero</div>

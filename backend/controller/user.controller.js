@@ -1,22 +1,38 @@
-import { User } from '../models/user.models.js'
+import { User } from '../models/user.models.js';
 import bcrypt from 'bcryptjs';
+import validator from 'validator';
 import createTokenandSaveCookies from '../jwt/AuthToken.js';
 import { v2 as cloudinary } from 'cloudinary';
 
 
 export const register = async (req, res) => {
     try {
-        const { name, email, password, phone, role } = req.body;
+        const { name, email, password, phone } = req.body;
 
-        // Ensure all required fields are present
-        if (!name || !email || !password || !phone || !role) {
-            return res.status(400).json({ error: "All fields are required" });
+        // Validate required fields — role is NOT accepted from client
+        if (!name || !email || !password || !phone) {
+            return res.status(400).json({ error: "Name, email, password, and phone are required" });
+        }
+
+        // Validate email format
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({ error: "Please enter a valid email address" });
+        }
+
+        // Validate password strength
+        if (password.length < 8) {
+            return res.status(400).json({ error: "Password must be at least 8 characters" });
+        }
+
+        // Validate name length
+        if (name.trim().length < 2 || name.trim().length > 50) {
+            return res.status(400).json({ error: "Name must be between 2 and 50 characters" });
         }
 
         // Check if the user already exists
-        const user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).json({ error: "User already exists" });
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(409).json({ error: "User already exists with this email" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -28,41 +44,53 @@ export const register = async (req, res) => {
             const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
 
             if (!allowedFileTypes.includes(photo.mimetype)) {
-                return res.status(400).json({ error: "Invalid file type" });
-            } 
+                return res.status(400).json({ error: "Invalid file type. Allowed: JPEG, PNG" });
+            }
+
+            if (photo.size > 5 * 1024 * 1024) {
+                return res.status(400).json({ error: "Photo must be under 5MB" });
+            }
 
             const CloudinaryResponse = await cloudinary.uploader.upload(photo.tempFilePath);
-            if (!CloudinaryResponse) {
+            if (!CloudinaryResponse || !CloudinaryResponse.public_id) {
                 return res.status(500).json({ error: "Error while uploading photo" });
             }
 
             uploadedPhoto = {
                 public_id: CloudinaryResponse.public_id,
-                url: CloudinaryResponse.url
+                url: CloudinaryResponse.secure_url
             };
         }
 
-        // Create new user
+        // SECURITY: Always set role to "user" — never trust client-provided role
         const newUser = new User({
             email,
-            name,
+            name: name.trim(),
             password: hashedPassword,
             phone,
-            role,
-            photo: uploadedPhoto // This will be `null` if no photo was uploaded
+            role: "user",
+            photo: uploadedPhoto
         });
 
         await newUser.save();
 
-        if (newUser) {
-            const token = await createTokenandSaveCookies(newUser._id, res);
-            console.log("Signup token:", token);
-        }
+        // Set JWT as httpOnly cookie — do NOT return token in response body
+        await createTokenandSaveCookies(newUser._id, res);
 
-        res.status(201).json({ message: "User registered successfully", newUser, token: newUser.token });
+        // Return sanitized user object (no password hash)
+        const userResponse = {
+            _id: newUser._id,
+            name: newUser.name,
+            email: newUser.email,
+            phone: newUser.phone,
+            role: newUser.role,
+            photo: newUser.photo,
+        };
+
+        res.status(201).json({ message: "User registered successfully", user: userResponse });
 
     } catch (error) {
-        console.error("Error in registration:", error);
+        console.error("Error in registration:", error.message);
         return res.status(500).json({ error: "Internal server error" });
     }
 };
@@ -70,44 +98,61 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password, role } = req.body;
-        if (!email || !password || !role) {
-            return res.status(400).json({ error: "All fields are required" })
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ error: "Email and password are required" });
         }
-        // console.log(password)
+
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({ error: "Please enter a valid email address" });
+        }
+
         const user = await User.findOne({ email }).select('+password');
         if (!user) {
-            return res.status(400).json({ error: "User does not exist" })
+            return res.status(401).json({ error: "Invalid email or password" });
         }
-        
+
         if (!user.password) {
-            return res.status(400).json({ error: "User does not have a password" })
+            return res.status(401).json({ error: "Invalid email or password" });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password)
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ error: "Invalid credentials" })
+            return res.status(401).json({ error: "Invalid email or password" });
         }
 
-        if (user.role !== role) {
-            return res.status(400).json({ message: `Given role ${role} is not valid for this user` })
-        }
+        // Set JWT as httpOnly cookie — do NOT return token in response body
+        await createTokenandSaveCookies(user._id, res);
 
-        const token = await createTokenandSaveCookies(user._id, res)
-        console.log("login: ", token)
-        return res.status(200).json({ message: "User logged in successfully", user, token })
+        // Return sanitized user object (no password hash)
+        const userResponse = {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            role: user.role,
+            photo: user.photo,
+        };
+
+        return res.status(200).json({ message: "User logged in successfully", user: userResponse });
     } catch (error) {
-        console.log(error)
+        console.error("Login error:", error.message);
+        return res.status(500).json({ error: "Internal server error" });
     }
-    return res.status(500).json({ error: "Internal server error" })
-}
+};
 
 export const logout = async (req, res) => {
     try {
-        res.clearCookie("token", { httpOnly: true });
-        return res.status(200).json({ message: "User logged out successfully" })
+        const isProduction = process.env.NODE_ENV === "production";
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? "None" : "Lax",
+            path: "/",
+        });
+        return res.status(200).json({ message: "User logged out successfully" });
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ error: "Internal server error" })
+        console.error("Logout error:", error.message);
+        return res.status(500).json({ error: "Internal server error" });
     }
-}
+};

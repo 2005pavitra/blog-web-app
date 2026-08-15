@@ -31,11 +31,7 @@ function Home() {
     setDeleteMessage("");
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.delete(`https://blog-web-app-rwce.onrender.com/api/blogs/delete/${blogId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await axios.delete(`${import.meta.env.VITE_API_URL}/api/blogs/delete/${blogId}`, {
         withCredentials: true
       });
 

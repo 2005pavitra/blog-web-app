@@ -10,34 +10,20 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
-  const [adminPasskey, setAdminPasskey] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
     
-    // Check if admin role is selected and passkey is provided
-    if (role === 'admin' && adminPasskey !== 'ADMIN123') {
-      alert('Invalid admin passkey! Please contact the system administrator.');
-      return;
-    }
-    
     try {
       const response = await axios.post(
-        "https://blog-web-app-rwce.onrender.com/api/users/login",
-        { email, password, role },
+        `${import.meta.env.VITE_API_URL}/api/users/login`,
+        { email, password },
         { withCredentials: true }
       );
   
-      console.log("Login Response:", response.data);
-  
-      if (response.data.token) {
-        login(response.data.user, response.data.token); 
-        console.log("Token Stored in Cookie");
-  
+      if (response.data.user) {
+        login(response.data.user); 
         navigate("/allblogs");
-      } else {
-        console.error("No token received from backend!");
       }
     } catch (err) {
       console.error("Login failed:", err?.response?.data?.message || err.message);
@@ -45,7 +31,6 @@ const Login = () => {
     }
   };
   
-
   return (
     <div className="p-6 max-w-sm mx-auto">
       <h2 className="text-xl font-bold mb-4">Login</h2>
@@ -66,26 +51,6 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <select
-          className="border text-black p-2 w-full mb-4"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          required
-        >
-          <option value="">Select Role</option>
-          <option value="admin">Admin</option>
-          <option value="user">User</option>
-        </select>
-        {role === 'admin' && (
-          <input
-            type="password"
-            placeholder="Admin Passkey"
-            className="border text-black p-2 w-full mb-4"
-            value={adminPasskey}
-            onChange={(e) => setAdminPasskey(e.target.value)}
-            required
-          />
-        )}
         <button  className="bg-blue-500 text-white px-4 py-2 rounded w-full mb-4">Login</button>
       </form>
       <div className="text-center">

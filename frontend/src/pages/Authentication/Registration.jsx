@@ -4,13 +4,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Registration() {
+    const navigate = useNavigate();
     const [formdata, setformdata] = useState({
         name: '',
         email: '',
         password: '',
-        phone: '',
-        role: 'user', // Default role set to 'user'
-        adminPasskey: '' // Admin passkey field
+        phone: ''
     });
 
     const handleChange = (e) => {
@@ -22,18 +21,12 @@ function Registration() {
     };
 
     const handleSubmit = async (e) => {
-        const navigate = useNavigate();
         e.preventDefault();
         
-        // Check if admin role is selected and passkey is provided
-        if (formdata.role === 'admin' && formdata.adminPasskey !== 'ADMIN123') {
-            alert('Invalid admin passkey! Please contact the system administrator.');
-            return;
-        }
-        
         try {
-            const response = await axios.post("https://blog-web-app-rwce.onrender.com/api/users/register", formdata);
-            console.log(response.data);
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/register`, formdata, {
+                withCredentials: true
+            });
             alert('User registered successfully!');
             navigate('/login');
         } catch (error) {
@@ -88,34 +81,6 @@ function Registration() {
                     required
                 />
             </div>
-            <div className="mb-4">
-                <label htmlFor="role" className="block text-gray-700 font-semibold mb-2">Role:</label>
-                <select
-                    name="role"
-                    value={formdata.role}
-                    onChange={handleChange}
-                    className="text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-            {formdata.role === 'admin' && (
-                <div className="mb-6">
-                    <label htmlFor="adminPasskey" className="block text-gray-700 font-semibold mb-2">Admin Passkey:</label>
-                    <input
-                        type="password"
-                        name="adminPasskey"
-                        value={formdata.adminPasskey}
-                        onChange={handleChange}
-                        placeholder="Enter admin passkey"
-                        className="text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required={formdata.role === 'admin'}
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Contact system administrator for the passkey</p>
-                </div>
-            )}
             <Button
                 variant="contained"
                 type="submit"

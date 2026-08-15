@@ -7,20 +7,38 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(() => {
-    // Try to get user from localStorage on initial load
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, {
+          method: "GET",
+          credentials: "include",
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+          localStorage.setItem("user", JSON.stringify(data.user));
+        } else {
+          setUser(null);
+          localStorage.removeItem("user");
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err.message);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const token = localStorage.getItem("token"); 
-  
-        const response = await fetch("https://blog-web-app-rwce.onrender.com/api/blogs/allblogs", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/blogs/allblogs`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`, 
             "Content-Type": "application/json",
           },
           credentials: "include",
@@ -31,9 +49,7 @@ export const AuthProvider = ({ children }) => {
         }
   
         const data = await response.json();
-        console.log("Blogs fetched:", data);
-  
-        setBlogs(data.allBlogs); 
+        setBlogs(data.blogs); 
       } catch (err) {
         console.error("Error fetching blogs:", err.message);
         setError("Failed to load blogs.");
@@ -45,27 +61,22 @@ export const AuthProvider = ({ children }) => {
     fetchBlogs(); 
   }, []);
   
-
-  const login = (userData, token) => {
-    console.log("Login function called: ", userData, token);
-
-    if (!token) {
-      console.error("No token received during login");
-      return;
-    }
-
-    localStorage.setItem("token", token);
+  const login = (userData) => {
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
-    console.log("Token stored:", localStorage.getItem("token")); // Debugging
-    console.log("User stored:", userData); // Debugging
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
+        method: "GET",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.error("Error logging out:", err.message);
+    }
     setUser(null);
-    localStorage.removeItem("token");
     localStorage.removeItem("user");
-    console.log("User logged out, token removed");
   };
 
   return (
@@ -76,46 +87,3 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
-
-// import React, { createContext, useContext, useEffect, useState } from "react";
-// import axios from "axios";
-
-// export const AuthContext = createContext();
-
-// export const AuthProvider = ({ children }) => {
-//   const [blogs, setBlogs] = useState();
-
-//   useEffect(() => {
-//     const fetchBlogs = async () => {
-//       const token = localStorage.getItem("token");
-//       console.log("Local storage token: ", token)
-//       if (!token) {
-//         console.warn("No token found, user might be logged out.");
-//         return;
-//       }
-
-//       try {
-//         const response = await axios.get("http://localhost:4000/api/blogs/allblogs", {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//           withCredentials: true,
-//         });
-//         console.log("Blogs fetched:", response.data);
-//         setBlogs(response.data);
-//       } catch (err) {
-//         console.error("Error fetching blogs:", err.response ? err.response.data : err.message);
-//       }
-//     };
-
-//     fetchBlogs();
-//   }, []);
-
-//   return (
-//     <AuthContext.Provider value={{ blogs }}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
-// export const useAuth = () => useContext(AuthContext);

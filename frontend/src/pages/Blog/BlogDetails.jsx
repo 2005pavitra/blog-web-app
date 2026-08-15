@@ -15,14 +15,8 @@ function BlogDetails() {
       try {
         console.log("Fetching blog with ID:", id);
 
-        const token = localStorage.getItem("token");
-
-        const response = await fetch(`https://blog-web-app-rwce.onrender.com/api/blogs/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/blogs/${id}`, {
           method: "GET",
-          // headers: {
-          //   "Authorization": `Bearer ${token}`,
-          //   "Content-Type": "application/json",
-          // },
           credentials: "include",
         });
 
@@ -35,9 +29,8 @@ function BlogDetails() {
         setBlog(data.blog);
         setLikeCount(data.blog.likeCount || 0);
         // Check if current user has liked this blog
-        const storedToken = localStorage.getItem("token");
-        if (storedToken && data.blog.likes) {
-          const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user && data.blog.likes) {
           setIsLiked(data.blog.likes.includes(user?._id));
         }
       } catch (err) {
@@ -54,16 +47,15 @@ function BlogDetails() {
 
   const handleLike = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user) {
         alert("Please login to like this blog");
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/api/blogs/like/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/blogs/like/${id}`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         credentials: "include",

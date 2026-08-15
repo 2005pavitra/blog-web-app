@@ -20,11 +20,7 @@ const EditBlog = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`https://blog-web-app-rwce.onrender.com/api/blogs/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/blogs/${id}`, {
           withCredentials: true
         });
 
@@ -70,13 +66,10 @@ const EditBlog = () => {
       data.append("blogImage", formData.blogImage);
     }
 
-    const token = localStorage.getItem("token");
-
     try {
-      const res = await axios.put(`http://localhost:4000/api/blogs/update/${id}`, data, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/blogs/update/${id}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
         },
         withCredentials: true
       });
