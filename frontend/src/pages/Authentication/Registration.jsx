@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useTheme } from '../../context/ThemeProvider';
 
 function Registration() {
     const navigate = useNavigate();
+    const { isDark } = useTheme();
     const [formdata, setformdata] = useState({
         name: '',
         email: '',
@@ -45,7 +47,7 @@ function Registration() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col md:flex-row bg-slate-50 font-sans">
+        <div className={`min-h-screen flex flex-col md:flex-row font-sans transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
             {/* Left Panel */}
             <div className="md:w-1/2 bg-slate-900 text-white flex flex-col justify-center items-center p-12 relative overflow-hidden hidden md:flex">
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 opacity-50 z-0"></div>
@@ -63,11 +65,11 @@ function Registration() {
             </div>
 
             {/* Right Panel */}
-            <div className="w-full md:w-1/2 flex items-center justify-center p-8 sm:p-12 bg-white shadow-xl md:shadow-none z-10">
+            <div className={`w-full md:w-1/2 flex items-center justify-center p-8 sm:p-12 shadow-xl md:shadow-none z-10 transition-colors duration-300 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="w-full max-w-md">
                     <div className="text-center md:text-left mb-8">
-                        <h2 className="text-3xl font-bold text-slate-900 mb-2">Create an account</h2>
-                        <p className="text-slate-500">Sign up to get started.</p>
+                        <h2 className={`text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Create an account</h2>
+                        <p className={isDark ? 'text-slate-400' : 'text-slate-500'}>Sign up to get started.</p>
                     </div>
 
                     {errorMsg && (
@@ -90,9 +92,9 @@ function Registration() {
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
+                            <label htmlFor="name" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>Full Name</label>
                             <div className="relative">
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">👤</span>
+                                <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>👤</span>
                                 <input
                                     type="text"
                                     name="name"
@@ -100,16 +102,16 @@ function Registration() {
                                     value={formdata.name}
                                     onChange={handleChange}
                                     placeholder="John Doe"
-                                    className="pl-10 w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white text-slate-900"
+                                    className={`pl-10 w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 ${isDark ? 'border-slate-600 bg-slate-700 text-white placeholder-slate-400 focus:bg-slate-700' : 'border-slate-200 bg-slate-50 focus:bg-white text-slate-900'}`}
                                     required
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
+                            <label htmlFor="email" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>Email Address</label>
                             <div className="relative">
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">✉️</span>
+                                <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>✉️</span>
                                 <input
                                     type="email"
                                     name="email"
@@ -117,16 +119,16 @@ function Registration() {
                                     value={formdata.email}
                                     onChange={handleChange}
                                     placeholder="you@example.com"
-                                    className="pl-10 w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white text-slate-900"
+                                    className={`pl-10 w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 ${isDark ? 'border-slate-600 bg-slate-700 text-white placeholder-slate-400 focus:bg-slate-700' : 'border-slate-200 bg-slate-50 focus:bg-white text-slate-900'}`}
                                     required
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">Password</label>
+                            <label htmlFor="password" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>Password</label>
                             <div className="relative">
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔒</span>
+                                <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>🔒</span>
                                 <input
                                     type="password"
                                     name="password"
@@ -134,16 +136,16 @@ function Registration() {
                                     value={formdata.password}
                                     onChange={handleChange}
                                     placeholder="••••••••"
-                                    className="pl-10 w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white text-slate-900"
+                                    className={`pl-10 w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 ${isDark ? 'border-slate-600 bg-slate-700 text-white placeholder-slate-400 focus:bg-slate-700' : 'border-slate-200 bg-slate-50 focus:bg-white text-slate-900'}`}
                                     required
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
+                            <label htmlFor="phone" className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>Phone Number</label>
                             <div className="relative">
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">📞</span>
+                                <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>📞</span>
                                 <input
                                     type="tel"
                                     name="phone"
@@ -151,7 +153,7 @@ function Registration() {
                                     value={formdata.phone}
                                     onChange={handleChange}
                                     placeholder="+1 (555) 000-0000"
-                                    className="pl-10 w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white text-slate-900"
+                                    className={`pl-10 w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 ${isDark ? 'border-slate-600 bg-slate-700 text-white placeholder-slate-400 focus:bg-slate-700' : 'border-slate-200 bg-slate-50 focus:bg-white text-slate-900'}`}
                                     required
                                 />
                             </div>
@@ -176,9 +178,9 @@ function Registration() {
                         </button>
                     </form>
 
-                    <div className="mt-8 text-center text-sm text-slate-600">
+                    <div className={`mt-8 text-center text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                         Already Registered?{' '}
-                        <Link to="/login" className="font-semibold text-amber-600 hover:text-amber-700 transition-colors">
+                        <Link to="/login" className="font-semibold text-amber-500 hover:text-amber-400 transition-colors">
                             Login now
                         </Link>
                     </div>

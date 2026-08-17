@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
+import { useTheme } from '../context/ThemeProvider'
 
 function Contact() {
+  const { isDark } = useTheme()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,19 +25,19 @@ function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-16 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className={`min-h-screen py-16 px-4 sm:px-6 lg:px-8 font-sans transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
       <div className="max-w-5xl mx-auto space-y-12">
         {/* Header Section */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className={`text-4xl md:text-5xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
             Contact Us
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             Have questions, suggestions, or want to become a writer? We'd love to hear from you.
           </p>
         </div>
         
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className={`rounded-2xl shadow-sm border overflow-hidden transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
           <div className="grid md:grid-cols-5 gap-0">
             
             {/* Contact Information (Left Sidebar) */}
@@ -101,11 +103,11 @@ function Contact() {
             
             {/* Contact Form (Right Side) */}
             <div className="p-8 md:p-12 md:col-span-3">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6 tracking-tight">Send a Message</h2>
+              <h2 className={`text-2xl font-bold mb-6 tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Send a Message</h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
+                    <label htmlFor="name" className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                       Name
                     </label>
                     <input
@@ -116,12 +118,12 @@ function Contact() {
                       onChange={handleChange}
                       required
                       placeholder="Jane Doe"
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
                     />
                   </div>
                   
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+                    <label htmlFor="email" className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                       Email
                     </label>
                     <input
@@ -132,13 +134,13 @@ function Contact() {
                       onChange={handleChange}
                       required
                       placeholder="jane@example.com"
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
                     />
                   </div>
                 </div>
                 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-slate-700 mb-1">
+                  <label htmlFor="subject" className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                     Subject
                   </label>
                   <input
@@ -149,12 +151,12 @@ function Contact() {
                     onChange={handleChange}
                     required
                     placeholder="How can we help you?"
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
                   />
                 </div>
                 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-1">
+                  <label htmlFor="message" className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                     Message
                   </label>
                   <textarea
@@ -165,7 +167,7 @@ function Contact() {
                     required
                     placeholder="Write your message here..."
                     rows="6"
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors resize-y"
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors resize-y ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
                   ></textarea>
                 </div>
                 

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Comments from "../../components/Comments";
+import { useTheme } from "../../context/ThemeProvider";
 
 function BlogDetails() {
   const { id } = useParams();
+  const { isDark } = useTheme();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -74,7 +76,7 @@ function BlogDetails() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+    <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
       <div className="animate-pulse flex flex-col items-center">
         <div className="w-12 h-12 rounded-full border-4 border-amber-500 border-t-transparent animate-spin mb-4"></div>
       </div>
@@ -82,28 +84,28 @@ function BlogDetails() {
   );
   
   if (error) return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+    <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">Error loading article</h2>
-        <p className="text-slate-500">{error}</p>
+        <h2 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-800'}`}>Error loading article</h2>
+        <p className={isDark ? 'text-slate-400' : 'text-slate-500'}>{error}</p>
       </div>
     </div>
   );
   
   if (!blog) return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <p className="text-xl text-slate-500 font-medium">Article not found</p>
+    <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
+      <p className={`text-xl font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Article not found</p>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 font-sans">
+    <div className={`min-h-screen py-12 font-sans transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation */}
         <button
           onClick={() => window.history.back()}
-          className="group flex items-center text-slate-500 hover:text-slate-900 transition-colors font-medium mb-10"
+          className={`group flex items-center transition-colors font-medium mb-10 ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}
         >
           <span className="mr-2 transform group-hover:-translate-x-1 transition-transform">←</span>
           Back to articles
@@ -117,22 +119,22 @@ function BlogDetails() {
             </span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight mb-8">
+          <h1 className={`text-4xl md:text-5xl font-extrabold leading-tight tracking-tight mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {blog.title || "Untitled Article"}
           </h1>
 
-          <div className="flex items-center justify-center gap-4 text-slate-600">
+          <div className={`flex items-center justify-center gap-4 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 font-bold text-lg">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${isDark ? 'bg-slate-700 text-slate-100' : 'bg-slate-200 text-slate-700'}`}>
                 {blog.adminName ? blog.adminName.charAt(0).toUpperCase() : 'A'}
               </div>
               <div className="text-left">
-                <p className="font-semibold text-slate-900">{blog.adminName}</p>
-                <p className="text-sm text-slate-500">Author</p>
+                <p className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{blog.adminName}</p>
+                <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Author</p>
               </div>
             </div>
-            <div className="w-1 h-1 rounded-full bg-slate-300 mx-2"></div>
-            <p className="text-sm text-slate-500">
+            <div className={`w-1 h-1 rounded-full mx-2 ${isDark ? 'bg-slate-500' : 'bg-slate-300'}`}></div>
+            <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
               Published on BlogSpace
             </p>
           </div>
@@ -150,20 +152,20 @@ function BlogDetails() {
         )}
 
         {/* Article Content */}
-        <div className="prose prose-lg prose-slate max-w-none mb-12 prose-headings:font-bold prose-a:text-amber-600 hover:prose-a:text-amber-700">
-          <p className="text-xl text-slate-700 leading-relaxed whitespace-pre-line">
+        <div className={`prose prose-lg max-w-none mb-12 prose-headings:font-bold ${isDark ? 'prose-invert prose-a:text-amber-400 hover:prose-a:text-amber-300' : 'prose-slate prose-a:text-amber-600 hover:prose-a:text-amber-700'}`}>
+          <p className={`text-xl leading-relaxed whitespace-pre-line ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
             {blog.description}
           </p>
         </div>
 
         {/* Article Footer & Actions */}
-        <div className="flex items-center justify-between py-6 border-t border-b border-slate-200 mb-12">
+        <div className={`flex items-center justify-between py-6 border-t border-b mb-12 ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>
           <button
             onClick={handleLike}
             className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 ${
               isLiked 
-                ? 'bg-red-50 text-red-600 border border-red-200' 
-                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                ? isDark ? 'bg-red-500/10 text-red-400 border border-red-500/30' : 'bg-red-50 text-red-600 border border-red-200'
+                : isDark ? 'bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
             }`}
           >
             <span className={`text-xl ${isLiked ? 'scale-110' : ''} transition-transform`}>
@@ -178,7 +180,7 @@ function BlogDetails() {
         </div>
 
         {/* Comments Section */}
-        <section className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-100">
+        <section className={`rounded-2xl p-6 sm:p-8 shadow-sm border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
           <Comments blogId={id} />
         </section>
         

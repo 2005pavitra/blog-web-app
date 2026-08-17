@@ -4,6 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       animation: {
@@ -73,13 +74,18 @@ export default {
       colors: {
         'gradient-start': '#f59e0b',
         'gradient-end': '#f97316',
+        'dark-bg': '#0f172a',
+        'dark-card': '#1e293b',
+        'dark-border': '#334155',
       },
       transitionDuration: {
         '350': '350ms',
       },
       boxShadow: {
         'elevated': '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+        'elevated-dark': '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
         'hover': '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+        'hover-dark': '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
       },
     },
   },

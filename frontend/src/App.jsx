@@ -12,25 +12,29 @@ import AdminBlog from './pages/Dashboard/AdminBlog'
 import CreateBlog from './pages/Dashboard/CreateBlog'
 import EditBlog from './pages/Dashboard/EditBlog'
 import {useAuth} from "./context/AuthProvider"
+import { useTheme } from './context/ThemeProvider'
 import BlogDetails from "./pages/Blog/BlogDetails";
 import UserDashboard from './pages/Dashboard/UserDashboard';
 
 function App() {
   const location = useLocation()
   const hideNavbarAndFooter = ["/login", "/registration"].includes(location.pathname); 
-
+  const { isDark } = useTheme()
   const { loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
+      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-500 border-t-transparent"></div>
+          <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Loading...</p>
+        </div>
       </div>
     );
   }
   
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className={`flex flex-col min-h-screen transition-colors duration-300 ${isDark ? 'bg-slate-900 text-slate-100' : 'bg-white text-slate-900'}`}>
       {!hideNavbarAndFooter && <Navbar />}
       <main className="flex-grow">
         <Routes>

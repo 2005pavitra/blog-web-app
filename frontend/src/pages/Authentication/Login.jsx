@@ -1,11 +1,13 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthProvider";
+import { useTheme } from "../../context/ThemeProvider";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
+  const { isDark } = useTheme();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,14 +40,14 @@ const Login = () => {
   
   return (
     <motion.div 
-      className="min-h-screen flex flex-col md:flex-row bg-slate-50 font-sans"
+      className={`min-h-screen flex flex-col md:flex-row font-sans transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       {/* Left Panel */}
       <motion.div 
-        className="md:w-1/2 bg-gradient-to-br from-slate-900 to-slate-800 text-white flex flex-col justify-center items-center p-12 relative overflow-hidden hidden md:flex"
+        className="w-0 md:w-1/2 bg-gradient-to-br from-slate-900 to-slate-800 text-white md:flex flex-col justify-center items-center p-12 relative overflow-hidden"
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -85,7 +87,7 @@ const Login = () => {
 
       {/* Right Panel */}
       <motion.div 
-        className="w-full md:w-1/2 flex items-center justify-center p-8 sm:p-12 bg-white shadow-xl md:shadow-none z-10"
+        className={`w-full md:w-1/2 flex items-center justify-center p-8 sm:p-12 shadow-xl md:shadow-none z-10 transition-colors duration-300 ${isDark ? 'bg-slate-800' : 'bg-white'}`}
         initial={{ x: 100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -102,8 +104,8 @@ const Login = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">Welcome back</h2>
-            <p className="text-slate-500">Please enter your details to sign in.</p>
+            <h2 className={`text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Welcome back</h2>
+            <p className={isDark ? 'text-slate-400' : 'text-slate-500'}>Please enter your details to sign in.</p>
           </motion.div>
 
           {errorMsg && (
@@ -132,18 +134,18 @@ const Login = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <label className="block text-sm font-medium text-slate-700 mb-2" htmlFor="email">
+              <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-200' : 'text-slate-700'}`} htmlFor="email">
                 Email Address
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                   ✉️
                 </span>
                 <motion.input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
-                  className="pl-10 w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white text-slate-900"
+                  className={`pl-10 w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 ${isDark ? 'border-slate-600 bg-slate-700 text-white placeholder-slate-400 focus:bg-slate-700' : 'border-slate-200 bg-slate-50 focus:bg-white text-slate-900'}`}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -157,18 +159,18 @@ const Login = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.1 }}
             >
-              <label className="block text-sm font-medium text-slate-700 mb-2" htmlFor="password">
+              <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-200' : 'text-slate-700'}`} htmlFor="password">
                 Password
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                   🔒
                 </span>
                 <motion.input
                   id="password"
                   type="password"
                   placeholder="••••••••"
-                  className="pl-10 w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white text-slate-900"
+                  className={`pl-10 w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 ${isDark ? 'border-slate-600 bg-slate-700 text-white placeholder-slate-400 focus:bg-slate-700' : 'border-slate-200 bg-slate-50 focus:bg-white text-slate-900'}`}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -209,14 +211,14 @@ const Login = () => {
           </motion.form>
 
           <motion.div 
-            className="mt-8 text-center text-sm text-slate-600"
+            className={`mt-8 text-center text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
             Don't have an account?{' '}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
-              <Link to="/registration" className="font-semibold text-amber-600 hover:text-amber-700 transition-colors">
+              <Link to="/registration" className="font-semibold text-amber-500 hover:text-amber-400 transition-colors">
                 Register here
               </Link>
             </motion.div>

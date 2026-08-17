@@ -1,8 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTheme } from '../context/ThemeProvider'
 
 function Footer() {
+  const { isDark } = useTheme()
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -34,7 +36,11 @@ function Footer() {
 
   return (
     <motion.footer 
-      className="bg-gradient-to-b from-slate-900 to-slate-950 text-slate-300 py-12 mt-16 border-t border-slate-800"
+      className={`text-sm py-12 mt-16 border-t transition-colors duration-300 ${
+        isDark
+          ? 'bg-slate-900 text-slate-300 border-slate-800'
+          : 'bg-slate-50 text-slate-700 border-slate-200'
+      }`}
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
@@ -50,7 +56,7 @@ function Footer() {
           
           <motion.div className="space-y-4" variants={itemVariants}>
             <motion.h3 
-              className="text-xl font-bold text-white flex items-center gap-2"
+              className={`text-xl font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}
               whileHover={{ x: 4 }}
             >
               <motion.span 
@@ -62,13 +68,13 @@ function Footer() {
               </motion.span>
               BlogSpace
             </motion.h3>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
+            <p className={`text-sm leading-relaxed max-w-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               A platform for thinkers, creators, and professionals to share ideas, stories, and expertise with the world.
             </p>
           </motion.div>
 
           <motion.div className="space-y-4" variants={itemVariants}>
-            <h4 className="text-lg font-semibold text-white">Quick Links</h4>
+            <h4 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Quick Links</h4>
             <ul className="space-y-2">
               {[
                 { name: 'All Blogs', path: '/allblogs' },
@@ -80,7 +86,7 @@ function Footer() {
                   variants={linkVariants}
                   custom={index}
                 >
-                  <Link to={link.path} className="text-sm hover:text-amber-400 transition-colors relative group">
+                  <Link to={link.path} className={`text-sm transition-colors relative group ${isDark ? 'text-slate-300 hover:text-amber-400' : 'text-slate-600 hover:text-amber-600'}`}>
                     {link.name}
                     <motion.span 
                       className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full"
@@ -93,7 +99,7 @@ function Footer() {
           </motion.div>
 
           <motion.div className="space-y-4" variants={itemVariants}>
-            <h4 className="text-lg font-semibold text-white">Connect</h4>
+            <h4 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Connect</h4>
             <motion.div 
               className="flex space-x-4"
               variants={containerVariants}
@@ -106,7 +112,7 @@ function Footer() {
                 <motion.a
                   key={social.name}
                   href="#"
-                  className="text-slate-400 hover:text-amber-400 transition-colors"
+                  className={`transition-colors ${isDark ? 'text-slate-500 hover:text-amber-400' : 'text-slate-400 hover:text-amber-600'}`}
                   variants={{
                     hidden: { opacity: 0, scale: 0 },
                     visible: {
@@ -127,25 +133,25 @@ function Footer() {
         </motion.div>
 
         <motion.div 
-          className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
+          className={`border-t transition-colors pt-8 flex flex-col md:flex-row justify-between items-center gap-4 ${isDark ? 'border-slate-700' : 'border-slate-300'}`}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <p className="text-slate-500 text-sm">
+          <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-600'}`}>
             &copy; 2025 BlogSpace. Built by Pavitra Pandey.
           </p>
-          <div className="flex space-x-4 text-sm text-slate-500">
+          <div className={`flex space-x-4 text-sm ${isDark ? 'text-slate-500' : 'text-slate-600'}`}>
             <motion.a 
               href="#" 
-              className="hover:text-amber-400 transition-colors"
+              className={`transition-colors ${isDark ? 'hover:text-amber-400' : 'hover:text-amber-600'}`}
               whileHover={{ x: 2 }}
             >
               Privacy Policy
             </motion.a>
             <motion.a 
               href="#" 
-              className="hover:text-amber-400 transition-colors"
+              className={`transition-colors ${isDark ? 'hover:text-amber-400' : 'hover:text-amber-600'}`}
               whileHover={{ x: 2 }}
             >
               Terms of Service
