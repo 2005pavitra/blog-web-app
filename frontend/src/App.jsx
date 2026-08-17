@@ -15,40 +15,37 @@ import {useAuth} from "./context/AuthProvider"
 import BlogDetails from "./pages/Blog/BlogDetails";
 import UserDashboard from './pages/Dashboard/UserDashboard';
 
-
-
 function App() {
-
   const location = useLocation()
   const hideNavbarAndFooter = ["/login", "/registration"].includes(location.pathname); 
 
-  const { loading} = useAuth();
-  // console.log(blogs)
+  const { loading } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
+      </div>
+    );
   }
   
-  // if (error) {
-    // return <div>{error}</div>;
-  // }
-
   return (
-    <div>
+    <div className="flex flex-col min-h-screen bg-slate-50">
       {!hideNavbarAndFooter && <Navbar />}
-      <Routes>
-        <Route path="/userdashboard" element={<UserDashboard />} />
-        <Route path="/registration" element={<Registration />} />
-        <Route path="/" element={<Navigate to="/registration" />}  replace/>
-        <Route path="/allblogs" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/createblog" element={<CreateBlog />} />
-        <Route path="/editblog/:id" element={<EditBlog />} />
-        <Route path="/blog/:id" element={<BlogDetails />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-
-      </Routes>
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/userdashboard" element={<UserDashboard />} />
+          <Route path="/registration" element={<Registration />} />
+          <Route path="/" element={<Navigate to="/allblogs" replace />} />
+          <Route path="/allblogs" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/createblog" element={<CreateBlog />} />
+          <Route path="/editblog/:id" element={<EditBlog />} />
+          <Route path="/blog/:id" element={<BlogDetails />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+      </main>
       {!hideNavbarAndFooter && <Footer />}
     </div>
   )

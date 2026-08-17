@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Button from '@mui/material/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -11,6 +10,9 @@ function Registration() {
         password: '',
         phone: ''
     });
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
+    const [successMsg, setSuccessMsg] = useState("");
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -22,76 +24,167 @@ function Registration() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
+        setErrorMsg("");
+        setSuccessMsg("");
         
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/register`, formdata, {
                 withCredentials: true
             });
-            alert('User registered successfully!');
-            navigate('/login');
+            setSuccessMsg("User registered successfully! Redirecting...");
+            setTimeout(() => {
+                navigate('/login');
+            }, 1500);
         } catch (error) {
             console.error("Error while registering:", error.response?.data || error.message);
-            alert(error.response?.data?.message || "Registration failed!");
+            setErrorMsg(error.response?.data?.message || "Registration failed!");
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-            <div className="mb-4">
-                <label htmlFor="name" className="block text-gray-700 font-semibold mb-2">Name:</label>
-                <input
-                    type="text"
-                    name="name"
-                    value={formdata.name}
-                    onChange={handleChange}
-                    className="text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                />
+        <div className="min-h-screen flex flex-col md:flex-row bg-slate-50 font-sans">
+            {/* Left Panel */}
+            <div className="md:w-1/2 bg-slate-900 text-white flex flex-col justify-center items-center p-12 relative overflow-hidden hidden md:flex">
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 opacity-50 z-0"></div>
+                <div className="z-10 text-center max-w-md">
+                    <h1 className="text-5xl font-bold mb-6 tracking-tight text-white">Join BlogSpace</h1>
+                    <p className="text-xl text-slate-300 leading-relaxed">
+                        Become part of our growing community of readers and writers. Share your voice today.
+                    </p>
+                    <div className="mt-12 flex space-x-4 justify-center">
+                        <div className="w-4 h-1 bg-slate-600 rounded-full"></div>
+                        <div className="w-16 h-1 bg-amber-500 rounded-full"></div>
+                        <div className="w-4 h-1 bg-slate-600 rounded-full"></div>
+                    </div>
+                </div>
             </div>
-            <div className="mb-4">
-                <label htmlFor="email" className="block text-gray-700 font-semibold mb-2">Email:</label>
-                <input
-                    type="email"
-                    name="email"
-                    value={formdata.email}
-                    onChange={handleChange}
-                    className="text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                />
+
+            {/* Right Panel */}
+            <div className="w-full md:w-1/2 flex items-center justify-center p-8 sm:p-12 bg-white shadow-xl md:shadow-none z-10">
+                <div className="w-full max-w-md">
+                    <div className="text-center md:text-left mb-8">
+                        <h2 className="text-3xl font-bold text-slate-900 mb-2">Create an account</h2>
+                        <p className="text-slate-500">Sign up to get started.</p>
+                    </div>
+
+                    {errorMsg && (
+                        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-md">
+                            <div className="flex">
+                                <span className="mr-2">⚠️</span>
+                                <p className="text-sm font-medium">{errorMsg}</p>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {successMsg && (
+                        <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-r-md">
+                            <div className="flex">
+                                <span className="mr-2">✅</span>
+                                <p className="text-sm font-medium">{successMsg}</p>
+                            </div>
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div>
+                            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">👤</span>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    id="name"
+                                    value={formdata.name}
+                                    onChange={handleChange}
+                                    placeholder="John Doe"
+                                    className="pl-10 w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white text-slate-900"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">✉️</span>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    value={formdata.email}
+                                    onChange={handleChange}
+                                    placeholder="you@example.com"
+                                    className="pl-10 w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white text-slate-900"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">Password</label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔒</span>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    value={formdata.password}
+                                    onChange={handleChange}
+                                    placeholder="••••••••"
+                                    className="pl-10 w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white text-slate-900"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">📞</span>
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    id="phone"
+                                    value={formdata.phone}
+                                    onChange={handleChange}
+                                    placeholder="+1 (555) 000-0000"
+                                    className="pl-10 w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white text-slate-900"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className={`w-full mt-2 bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>Registering...</span>
+                                </>
+                            ) : (
+                                <span>Register</span>
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="mt-8 text-center text-sm text-slate-600">
+                        Already Registered?{' '}
+                        <Link to="/login" className="font-semibold text-amber-600 hover:text-amber-700 transition-colors">
+                            Login now
+                        </Link>
+                    </div>
+                </div>
             </div>
-            <div className="mb-4">
-                <label htmlFor="password" className="block text-gray-700 font-semibold mb-2">Password:</label>
-                <input
-                    type="password"
-                    name="password"
-                    value={formdata.password}
-                    onChange={handleChange}
-                    className="text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                />
-            </div>
-            <div className="mb-4">
-                <label htmlFor="phone" className="block text-gray-700 font-semibold mb-2">Phone:</label>
-                <input
-                    type="tel"
-                    name="phone"
-                    value={formdata.phone}
-                    onChange={handleChange}
-                    className="text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                />
-            </div>
-            <Button
-                variant="contained"
-                type="submit"
-                className="w-full text-white bg-blue-500 font-semibold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            >
-                Register
-            </Button>
-            <p className="text-black text-center mt-4">
-                Already Registered? <Link to="/login" className="text-blue-500">Login now</Link>
-            </p>
-        </form>
+        </div>
     );
 }
 
